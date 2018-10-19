@@ -1,0 +1,2 @@
+FLASK_APP=kamericanapp.py
+FLASK_ENV=development
