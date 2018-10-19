@@ -1,0 +1,14 @@
+<html>
+    <head>
+      {% if title %}
+      <title>kamerican app - {{ title }}</title>
+      {% else %}
+      <title>Welcome to kamerican app!</title>
+      {% endif %}
+    </head>
+    <body>
+        <div>Navigation: <a href="/index">Home</a></div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>
