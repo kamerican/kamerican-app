@@ -15,6 +15,6 @@ migrate = Migrate(app, db)
 
 
 # Load python application modules
-from kamericanapp import routes
+from kamericanapp import routes, models
 
 
