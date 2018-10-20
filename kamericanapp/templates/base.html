@@ -1,14 +1,30 @@
 <html>
     <head>
-      {% if title %}
-      <title>kamerican app - {{ title }}</title>
-      {% else %}
-      <title>Welcome to kamerican app!</title>
-      {% endif %}
+        {% if title %}
+        <title>kamerican app - {{ title }}</title>
+        {% else %}
+        <title>Welcome to kamerican app!</title>
+        {% endif %}
     </head>
     <body>
-        <div>Navigation: <a href="/index">Home</a></div>
+        <div>
+            Navigation:
+            <a href="{{ url_for('Index') }}">Home</a>
+            <a href="{{ url_for('Login') }}">Login</a>
+        </div>
         <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+
+
         {% block content %}{% endblock %}
     </body>
 </html>
