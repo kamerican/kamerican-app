@@ -1,2 +1,2 @@
-FLASK_APP=kamericanapp.py
+FLASK_APP=launch.py
 FLASK_ENV=development
