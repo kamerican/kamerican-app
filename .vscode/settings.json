@@ -1,6 +1,8 @@
 {
     "python.pythonPath": "env\\Scripts\\python.exe",
     "python.linting.pylintArgs": ["--load-plugins", "pylint_flask"],
-
+    //"files.associations": {
+    //    "*.html": "jinja-html",
+    //},
 
 }
