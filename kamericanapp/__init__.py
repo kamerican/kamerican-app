@@ -12,7 +12,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 login.login_view = 'auth.login'
-login.login_message = 'Please log in to access this page.'
+#login.login_message = 'Please log in to access this page.' @ this is default
 bootstrap = Bootstrap()
 
 
@@ -26,7 +26,7 @@ def create_app(config_class=Config):
     login.init_app(app)
     bootstrap.init_app(app)
 
-
+    # Register blueprints
     from kamericanapp.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
@@ -53,4 +53,4 @@ def create_app(config_class=Config):
     return app
 
 
-from kamericanapp import models
+from kamericanapp.database import models
