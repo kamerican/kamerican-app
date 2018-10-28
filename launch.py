@@ -4,4 +4,4 @@ from kamericanapp.database.models import Users
 app = create_app()
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'User': Users}
+    return {'db': db, 'Users': Users}

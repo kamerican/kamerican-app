@@ -3,9 +3,9 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-#@login.user_loader
-#def load_user(id):
-#    return Users.query.get(int(id))
+@login.user_loader
+def load_user(id):
+    return Users.query.get(int(id))
 
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
