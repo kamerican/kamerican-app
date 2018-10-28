@@ -48,7 +48,7 @@ def register():
             flash('Your email is now registered.')
             return redirect(url_for('auth.login'))
         else:
-            return render_template('register.html', title='Register', form=form)
+            return render_template('register.html', form=form)
 
 
 

@@ -36,6 +36,9 @@ def create_app(config_class=Config):
     from kamericanapp.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    from kamericanapp.twtimgdl import bp as twtimgdl_bp
+    app.register_blueprint(twtimgdl_bp)
+
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):
             os.mkdir('logs')
