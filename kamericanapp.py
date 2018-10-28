@@ -1,1 +1,0 @@
-from kamericanapp import app

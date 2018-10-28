@@ -8,8 +8,9 @@
 *.jpg
 *.png
 
-# ignore dat files
+# ignore general files
 *.dat
+logs/
 
 
 
