@@ -10,9 +10,9 @@ from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
-login = LoginManager()
-login.login_view = 'auth.login'
-login.login_message = 'Please log in to access this page.'
+#login = LoginManager()
+#login.login_view = 'auth.login'
+#login.login_message = 'Please log in to access this page.'
 bootstrap = Bootstrap()
 
 
@@ -23,21 +23,18 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    login.init_app(app)
+    #login.init_app(app)
     bootstrap.init_app(app)
 
     # Register blueprints
     from kamericanapp.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
 
-    from kamericanapp.auth import bp as auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    from kamericanapp.dashboard import bp as dashboard_bp
+    app.register_blueprint(dashboard_bp)
 
-    from kamericanapp.main import bp as main_bp
-    app.register_blueprint(main_bp)
-
-    from kamericanapp.twtimgdl import bp as twtimgdl_bp
-    app.register_blueprint(twtimgdl_bp)
+    from kamericanapp.imagedownloader import bp as imagedownloader_bp
+    app.register_blueprint(imagedownloader_bp)
 
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):

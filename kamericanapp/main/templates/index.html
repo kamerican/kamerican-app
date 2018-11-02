@@ -1,8 +1,0 @@
-{% extends 'base.html' %}
-
-{% block app_content %}
-    <h1>Dashboard</h1>
-    <p>Email: {{ current_user.email }}</p>
-    <p>Is admin: {{ current_user.is_admin }}</p>
-    <p>Permission to use Twitter Image Downloader: {{ current_user.perm_twtimgdl }}</p>
-{% endblock %}
