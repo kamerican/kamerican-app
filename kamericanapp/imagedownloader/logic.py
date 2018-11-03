@@ -4,6 +4,7 @@ from requests_html import HTMLSession
 import re
 import os
 import time
+#from kamericanapp import 
 
 class ImageDownloader(object):
     def __init__(self, chunk_size=1024):
@@ -98,3 +99,21 @@ class ImageDownloader(object):
                     for chunk in image_response.iter_content(self.chunk_size):
                         f.write(chunk)
         return
+
+
+    @celery.task(bind=True)
+    def long_task(self):
+        """Background task that runs a long function with progress reports."""
+        verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
+        adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
+        noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
+        message = ''
+        total = random.randint(10, 50)
+        for i in range(total):
+            if not message or random.random() < 0.25:
+                message = '{0} {1} {2}...'.format(random.choice(verb),
+                                                random.choice(adjective),
+                                                random.choice(noun))
+            self.update_state(state='PROGRESS', meta={'current': i, 'total': total,'status': message})
+            time.sleep(1)
+        return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': 42}

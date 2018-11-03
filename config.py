@@ -14,3 +14,7 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'kamericanapp', 'database', 'production.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     #print(SQLALCHEMY_DATABASE_URI)
+
+    # Celery
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
