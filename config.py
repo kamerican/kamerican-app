@@ -15,6 +15,5 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     #print(SQLALCHEMY_DATABASE_URI)
 
-    # Celery
-    CELERY_BROKER_URL = 'redis://localhost:6379/0'
-    CELERY_RESULT_BACKEND = 'rpc://'
+    # Redis
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'

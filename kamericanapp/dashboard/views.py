@@ -7,6 +7,7 @@ from kamericanapp.dashboard import bp
 
 @bp.route('/')
 def root():
+    flash('Redirect to index!')
     return redirect(url_for('dashboard.index'))
 
 @bp.route('/index', methods=['GET', 'POST'])

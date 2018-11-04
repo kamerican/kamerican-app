@@ -18,7 +18,16 @@ class ImageDownloader(object):
         self.html_session = HTMLSession()
         return
     ### Main methods
-    def Download(self, twitter_URL):
+    def DownloadFromListOfTwitterURLs(self, twitter_URL_list):
+        for twitter_URL in twitter_URL_list:
+            self.DownloadFromTwitterURL(twitter_URL)
+
+        #time_start = time.time()
+        #time_end = time.time()
+        #print("Wrote " + str(total_number_of_images) + " images to disk.")
+        #print("Process took " + str(time_end - time_start) + " seconds.")
+        return
+    def DownloadFromTwitterURL(self, twitter_URL):
         twitter_URL = self._ProcessTwitterURL(twitter_URL)
 
         meta_tag_list, code = self._GetMetaTagsFromURLHTML(twitter_URL)
@@ -99,3 +108,10 @@ class ImageDownloader(object):
                         f.write(chunk)
         return
 
+    def tempfunc(self):
+        n = 10
+        for i in range(1, n + 1):
+            percentage = i/n*100
+            print(percentage)
+            time.sleep(0.5)
+        return

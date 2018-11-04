@@ -1,11 +1,10 @@
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import render_template, flash, redirect, url_for, request, jsonify, current_app, Response
 from kamericanapp import db
 from kamericanapp.imagedownloader import bp
 from kamericanapp.imagedownloader.forms import LinksForm
 from kamericanapp.imagedownloader.logic import ImageDownloader
 import time
-#
-#from kamericanapp import celery
+
 from rq import Queue, get_current_job
 from redis import Redis
 from rq.job import Job
@@ -13,26 +12,35 @@ from rq.job import Job
 
 import random
 
+@bp.route("/stream")
+def stream():
+    def eventStream():
+        i = 1
+        while i < 5:
+            print("data: {}\n\n".format(i))
+            yield "data: {}\n\n".format(i)
+            i += 1
+            time.sleep(1)
+    return Response(eventStream(), mimetype="text/event-stream")
+
+
+
+
 @bp.route('/imagedownloader', methods=['GET', 'POST'])
 def imagedownloader():
     form = LinksForm()
     if form.validate_on_submit():
-        time_start = time.time()
-        total_number_of_images = 0
-
+        
+        '''
         twitter_URL_list = form.links.data.splitlines()
-
         image_downloader = ImageDownloader()
-
-        for twitter_URL in twitter_URL_list:
-            image_downloader.Download(twitter_URL)
-            total_number_of_images += 1
+        image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
+        '''
+        image_downloader = ImageDownloader()
+        job = current_app.queue.enqueue(image_downloader.tempfunc)
+        
         
 
-        
-        time_end = time.time()
-        print("Wrote " + str(total_number_of_images) + " images to disk.")
-        print("Process took " + str(time_end - time_start) + " seconds.")
         return redirect(url_for('dashboard.index'))
     else:
         return render_template('imagedownloader.html', form=form)

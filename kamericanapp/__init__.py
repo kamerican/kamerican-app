@@ -6,15 +6,17 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from config import Config
-#from celery import Celery
 
-os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
+from redis import Redis
+from rq import Queue
+
+
+#os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
 
 db = SQLAlchemy()
 migrate = Migrate()
 bootstrap = Bootstrap()
-#print(Config.CELERY_RESULT_BACKEND)
-#celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, backend=Config.CELERY_RESULT_BACKEND)
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -23,7 +25,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     bootstrap.init_app(app)
-    #celery.conf.update(app.config)
+
+    # Redis
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.queue = Queue(connection=app.redis)
     
     # Register blueprints
     from kamericanapp.errors import bp as errors_bp
