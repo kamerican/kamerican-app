@@ -26,7 +26,6 @@
     <div class="container">
         
         <!-- Flashed messages -->
-        
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
@@ -42,14 +41,7 @@
         <span id="image-downloader-update">TEST</span>
 
         <script>
-            var targetContainer = document.getElementById("image-downloader-update");
-            console.log(targetContainer)
-            var source = new EventSource('/stream');
-            console.log(source)
-            source.onmessage = function(e) {
-                console.log(e.data);
-                targetContainer.innerHTML = e.data;
-            };
+            
         </script>
 
 
@@ -60,9 +52,20 @@
 
 {% block scripts %}
     <script>
-        
 
         /*
+        
+        
+        var targetContainer = document.getElementById("image-downloader-update");
+            console.log(targetContainer)
+            var source = new EventSource('/stream');
+            console.log(source)
+            source.onmessage = function(e) {
+                console.log(e.data);
+                targetContainer.innerHTML = e.data;
+            };
+
+        
         
         var eventSource = new EventSource("/stream");
         eventSource.addEventListener('message', function(e) {

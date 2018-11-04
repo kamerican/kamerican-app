@@ -12,34 +12,31 @@ from rq.job import Job
 
 import random
 
-@bp.route("/stream")
-def stream():
-    def eventStream():
-        i = 1
-        while i < 5:
-            print("data: {}\n\n".format(i))
-            yield "data: {}\n\n".format(i)
-            i += 1
-            time.sleep(1)
-    return Response(eventStream(), mimetype="text/event-stream")
-
-
-
 
 @bp.route('/imagedownloader', methods=['GET', 'POST'])
 def imagedownloader():
     form = LinksForm()
     if form.validate_on_submit():
+        queue = Queue(connection=Redis())
         
-        '''
-        twitter_URL_list = form.links.data.splitlines()
+        #twitter_URL_list = form.links.data.splitlines()
+        #image_downloader = ImageDownloader()
+        #image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
+        
+
+
         image_downloader = ImageDownloader()
-        image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
-        '''
-        image_downloader = ImageDownloader()
-        job = current_app.queue.enqueue(image_downloader.tempfunc)
+        job = queue.enqueue(image_downloader.tempfunc)
+        
+        #job2 = queue.enqueue(image_downloader.tempfunc)
+
         
         
+        #time.sleep(5)
+        #print(queue)
+        #print(queue.jobs)
+        #print(job.id)
+        #print(job.status)
 
         return redirect(url_for('dashboard.index'))
     else:

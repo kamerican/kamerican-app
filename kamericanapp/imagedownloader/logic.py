@@ -113,5 +113,5 @@ class ImageDownloader(object):
         for i in range(1, n + 1):
             percentage = i/n*100
             print(percentage)
-            time.sleep(0.5)
+            time.sleep(3)
         return
