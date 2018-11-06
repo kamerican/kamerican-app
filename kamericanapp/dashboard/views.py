@@ -7,6 +7,7 @@ import time
 
 from rq import Queue
 from redis import Redis
+from rq.registry import StartedJobRegistry
 
 @bp.route('/')
 def root():
@@ -22,21 +23,27 @@ def index():
 def events():
     def eventStream():
         print('@@@ ENTERING EVENT STREAM @@@')
+        
         queue = Queue(connection=Redis())
+        registry = StartedJobRegistry(queue=queue)
         print(queue)
         print(queue.jobs)
-        message = ""
-        # Update image downloader progress
-        for job in queue.jobs:
-            job.refresh()
-            
-            message = job.id
-            print('message: ' + message)
+        print(registry)
+        print(registry.get_job_ids())
         
-        print("data: {}\n\n".format(message))
-        yield "data: {}\n\n".format(message)
-        # Refresh every 3 seconds
-        time.sleep(3)
+        while True:
+            message = ""
+            # Update image downloader progress
+            for job_id in registry.get_job_ids():
+                # fix this if needed @@@ job.refresh()
+                
+                message = "Running job: " + job_id
+                print('message to send to event source: ' + message)
+            
+            time.sleep(2)
+            print("data: {}\n\n".format(message))
+            yield "data: {}\n\n".format(message)
+        
 
     return Response(eventStream(), mimetype="text/event-stream")
 
