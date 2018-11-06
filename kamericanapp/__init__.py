@@ -1,45 +1,47 @@
-import logging
-from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
-from flask import Flask, request, current_app
+import logging
+from logging.handlers import RotatingFileHandler
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from config import Config
-
+from flask_socketio import SocketIO
 from redis import Redis
 from rq import Queue
 
 
-#os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
 
 db = SQLAlchemy()
 migrate = Migrate()
 bootstrap = Bootstrap()
-
+socketio = SocketIO()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     with app.app_context():
+        
+
+        # Redis, unnecessary now
+        #app.redis = Redis.from_url(app.config['REDIS_URL'])
+        #app.queue = Queue(connection=app.redis)
+        
+        # Register blueprints
+        from kamericanapp.errors import bp_errors
+        app.register_blueprint(bp_errors)
+
+        from kamericanapp.dashboard import bp_dashboard
+        app.register_blueprint(bp_dashboard)
+
+        from kamericanapp.imagedownloader import bp_imagedownloader
+        app.register_blueprint(bp_imagedownloader)
+
         db.init_app(app)
         migrate.init_app(app, db)
         bootstrap.init_app(app)
-
-        # Redis
-        app.redis = Redis.from_url(app.config['REDIS_URL'])
-        app.queue = Queue(connection=app.redis)
-        
-        # Register blueprints
-        from kamericanapp.errors import bp as errors_bp
-        app.register_blueprint(errors_bp)
-
-        from kamericanapp.dashboard import bp as dashboard_bp
-        app.register_blueprint(dashboard_bp)
-
-        from kamericanapp.imagedownloader import bp as imagedownloader_bp
-        app.register_blueprint(imagedownloader_bp)
+        socketio.init_app(app)
 
         '''
         if not app.debug and not app.testing:

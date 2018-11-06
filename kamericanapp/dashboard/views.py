@@ -11,7 +11,7 @@ from rq.registry import StartedJobRegistry
 
 @bp.route('/')
 def root():
-    flash('Redirect to index!')
+    flash('Redirected to index!')
     return redirect(url_for('dashboard.index'))
 
 @bp.route('/index', methods=['GET', 'POST'])

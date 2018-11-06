@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config(object):
     # Server
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
-        'you-will-never-guess'
+        os.urandom(16)
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
