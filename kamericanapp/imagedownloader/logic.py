@@ -5,6 +5,9 @@ import re
 import os
 import time
 
+from kamericanapp import db
+#from kamericanapp.database.models import Job
+
 class ImageDownloader(object):
     def __init__(self, chunk_size=1024):
         working_directory = os.getcwd()
@@ -109,6 +112,7 @@ class ImageDownloader(object):
         return
 
     def tempfunc(self):
+
         n = 10
         for i in range(1, n + 1):
             percentage = i/n*100
