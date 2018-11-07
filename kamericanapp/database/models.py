@@ -1,17 +1,20 @@
 from kamericanapp import db
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 
+from rq import Queue, get_current_job
+from redis import Redis
+from rq.job import Job
 
-class Job(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
+class RQJob(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.String(36))
     status = db.Column(db.String(8))
     enqueued_at = db.Column(db.DateTime)
     started_at = db.Column(db.DateTime)
     ended_at = db.Column(db.DateTime)
 
     def __repr__(self):
-        return '<RQJob id: {}>'.format(self.id)
+        return '<RQJob id: {}>'.format(self.job_id)
     def set_status(self, job_status):
         self.status = job_status
     def set_enqueue_time(self, rq_time):
@@ -20,11 +23,11 @@ class Job(db.Model):
         self.started_at = rq_time
     def set_end_time(self, rq_time):
         self.ended_at = rq_time
-    def get_enqueue_time(self, rq_time):
+    def get_enqueue_time(self):
         return self.enqueued_at
-    def get_start_time(self, rq_time):
+    def get_start_time(self):
         return self.started_at
-    def get_end_time(self, rq_time):
+    def get_end_time(self):
         return self.ended_at
 
 

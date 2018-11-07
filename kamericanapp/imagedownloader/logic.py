@@ -6,7 +6,7 @@ import os
 import time
 
 from kamericanapp import db
-#from kamericanapp.database.models import Job
+from kamericanapp.database.models import RQJob
 
 class ImageDownloader(object):
     def __init__(self, chunk_size=1024):
@@ -112,7 +112,7 @@ class ImageDownloader(object):
         return
 
     def tempfunc(self):
-
+        job = RQJob()
         n = 10
         for i in range(1, n + 1):
             percentage = i/n*100
