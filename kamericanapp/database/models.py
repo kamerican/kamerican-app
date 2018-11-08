@@ -4,6 +4,10 @@ from datetime import datetime
 from rq import Queue, get_current_job
 from redis import Redis
 from rq.job import Job
+from rq.registry import StartedJobRegistry, FinishedJobRegistry
+
+
+
 
 class RQJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)

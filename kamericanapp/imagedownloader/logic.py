@@ -23,6 +23,7 @@ class ImageDownloader(object):
     ### Main methods
     def DownloadFromListOfTwitterURLs(self, twitter_URL_list):
         for twitter_URL in twitter_URL_list:
+            print("Saving images from: " + twitter_URL)
             self.DownloadFromTwitterURL(twitter_URL)
 
         #time_start = time.time()

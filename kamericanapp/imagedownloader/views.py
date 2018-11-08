@@ -19,14 +19,14 @@ def imagedownloader():
     if form.validate_on_submit():
         queue = Queue(connection=Redis())
         
-        #twitter_URL_list = form.links.data.splitlines()
-        #image_downloader = ImageDownloader()
-        #image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
-        
-
-
+        twitter_URL_list = form.links.data.splitlines()
         image_downloader = ImageDownloader()
-        job = queue.enqueue(image_downloader.tempfunc)
+        #image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
+        job = queue.enqueue(image_downloader.DownloadFromListOfTwitterURLs, twitter_URL_list)
+
+
+        #image_downloader = ImageDownloader()
+        #job = queue.enqueue(image_downloader.tempfunc)
         
 
         return redirect(url_for('dashboard.index'))
