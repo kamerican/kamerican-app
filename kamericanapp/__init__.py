@@ -9,7 +9,9 @@ from config import Config
 from flask_socketio import SocketIO
 from redis import Redis
 from rq import Queue
+import eventlet
 
+eventlet.monkey_patch()
 
 
 db = SQLAlchemy()

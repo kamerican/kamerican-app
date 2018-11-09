@@ -8,7 +8,9 @@ chardet==3.0.4
 Click==7.0
 colorama==0.4.0
 cssselect==1.0.3
+dnspython==1.15.0
 dominate==2.3.4
+eventlet==0.24.1
 fake-useragent==0.1.11
 Flask==1.0.2
 Flask-Bootstrap==3.3.7.1
@@ -17,6 +19,7 @@ Flask-Migrate==2.3.0
 Flask-SocketIO==3.0.2
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
+greenlet==0.4.15
 idna==2.7
 isort==4.3.4
 itsdangerous==0.24
@@ -26,6 +29,7 @@ lxml==4.2.5
 Mako==1.0.7
 MarkupSafe==1.0
 mccabe==0.6.1
+monotonic==1.5
 parse==1.9.0
 pip-autoremove==0.9.1
 pyee==5.0.0
