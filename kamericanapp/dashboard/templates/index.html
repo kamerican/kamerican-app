@@ -12,34 +12,5 @@
     <hr>
 
 
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.slim.js"></script>
-    <script>
-        //var targetContainer = document.getElementById("image-downloader-update");
-        //console.log(targetContainer)
-        /* Old SSE javascript
-        var source = new EventSource('/events');
-        console.log(source)
-        source.onmessage = function(e) {
-            console.log(e.data);
-            targetContainer.innerHTML = e.data;
-        };
-        */
-    </script>
-    <script type="text/javascript" charset="utf-8">
-        var targetContainer = document.getElementById("image-downloader-update");
-        console.log(targetContainer)
 
-
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        socket.on('connect', function() {
-            //socket.emit('my event', {data: 'I\'m connected!'});
-            socket.send('Websocket connected');
-            socket.emit('start receiving notifications')
-        });
-        socket.on('notification', function(msg) {
-            console.log(msg)
-            socket.send('Received notification');
-            targetContainer.innerHTML = msg.data;
-        });
-    </script>
 {% endblock %}

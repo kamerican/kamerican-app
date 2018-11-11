@@ -1,0 +1,100 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    kamerican
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">kamerican</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('imagedownloader.imagedownloader') }}">{{ 'Twitter Image Downloader' }}</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- Add links on the right side of the navbar here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        
+        <!-- Flashed messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        <div class="alert alert-info" id="job-progress-notification" role="alert" style="display: none;">
+            <span id="job-id">
+                hi
+            </span>
+        </div>
+        <!-- Job progress -->
+        {#
+        {% with job_ids = get_running_job_ids() %}
+        {% if job_ids %}
+            {% for job_id in job_ids %}
+            <div class="alert alert-info" role="alert">
+                <span id="job-id">
+                    {{ job_id }}
+                </span>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        #}
+        
+        
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.slim.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var job_id = document.getElementById("job-id");
+        var job_progress_notification = document.getElementById("job-progress-notification");
+        
+        //console.log(job_progress_notification.style.display)
+        //job_id.innerHTML = job_progress_notification.style.display
+
+        
+        socket.on('connect', function() {
+            //socket.emit('my event', {data: 'I\'m connected!'});
+            socket.send('Websocket connected');
+            //socket.emit('start receiving notifications')
+        });
+        socket.on('disconnect', function() {
+            console.log("Disconnected")
+        });
+
+        socket.on('update job progress', function(msg) {
+            console.log(msg)
+            socket.send('Received running job progress');
+            job_id.innerHTML = msg.progress;
+        });
+
+
+        socket.on('show job progress notification bar', function() {
+            socket.send('Showing job progress notification bar');
+            job_progress_notification.style.display = 'block';
+        });
+        socket.on('hide job progress notification bar', function() {
+            socket.send('Hiding job progress notification bar');
+            job_progress_notification.style.display = 'none';
+        });
+    </script>
+{% endblock %}

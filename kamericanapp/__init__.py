@@ -40,6 +40,10 @@ def create_app(config_class=Config):
         from kamericanapp.imagedownloader import bp_imagedownloader
         app.register_blueprint(bp_imagedownloader)
 
+        from kamericanapp.notification import bp_notification
+        app.register_blueprint(bp_notification)
+
+
         db.init_app(app)
         migrate.init_app(app, db)
         bootstrap.init_app(app)
