@@ -35,25 +35,8 @@
         {% endwith %}
         
         <div class="alert alert-info" id="job-progress-notification" role="alert" style="display: none;">
-            <span id="job-id">
-                hi
-            </span>
+            <span id="job-id"></span>
         </div>
-        <!-- Job progress -->
-        {#
-        {% with job_ids = get_running_job_ids() %}
-        {% if job_ids %}
-            {% for job_id in job_ids %}
-            <div class="alert alert-info" role="alert">
-                <span id="job-id">
-                    {{ job_id }}
-                </span>
-            </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-        #}
-        
         
 
         {# application content needs to be provided in the app_content block #}
@@ -88,13 +71,19 @@
         });
 
 
-        socket.on('show job progress notification bar', function() {
-            socket.send('Showing job progress notification bar');
-            job_progress_notification.style.display = 'block';
+        socket.on('show running job bar', function() {
+            if (job_progress_notification.style.display == "none") {
+                socket.send('Showing running job bar');
+                job_progress_notification.style.display = 'block';
+            }
+            
         });
-        socket.on('hide job progress notification bar', function() {
-            socket.send('Hiding job progress notification bar');
-            job_progress_notification.style.display = 'none';
+        socket.on('hide running job bar', function() {
+            if (job_progress_notification.style.display == "block") {
+                socket.send('Hiding running job bar');
+                job_progress_notification.style.display = 'none';
+            }
+            
         });
     </script>
 {% endblock %}
