@@ -11,21 +11,28 @@ def route_imagedownloader():
     form = LinksForm()
     if form.validate_on_submit():
         twitter_URL_list = form.links.data.splitlines()
-        download(twitter_URL_list)
+        run_local = form.run_local.data
+        
+        redis = Redis()
+        queue = Queue(connection=redis)
+        '''
+        if run_local:
+            queue = Queue(is_async=False, connection=redis)
+        else:
+            queue = Queue(connection=redis)
+        '''
+        queue.enqueue_call(
+            func=async_download,
+            args=(twitter_URL_list,),
+        )
         return redirect(url_for('dashboard.route_index'))
     else:
         return render_template('imagedownloader.html', form=form)
     
-def download(twitter_URL_list):
-    redis = Redis()
-    queue = Queue(connection=redis)
+def async_download(twitter_URL_list):
     image_downloader = ImageDownloader()
-
-    #image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
-    #job = queue.enqueue(image_downloader.DownloadFromListOfTwitterURLs, twitter_URL_list)
-    queue.enqueue_call(func=image_downloader.tempfunc)
-    return
-
+    result = image_downloader.DownloadFromListOfTwitterURLs(twitter_URL_list)
+    return result
 
 
 

@@ -11,10 +11,10 @@ from rq import get_current_job
 class ImageDownloader(object):
     def __init__(self, chunk_size=1024):
         working_directory = os.getcwd()
+        #print(working_directory)
         #dirname = os.path.dirname(__file__)
 
         self.download_path = os.path.join(working_directory, 'kamericanapp', 'database', 'images', 'download')
-        #self.download_path = os.path.join('..', 'database', 'images', 'download')
         #print(self.download_path)
 
         self.chunk_size = chunk_size
@@ -22,32 +22,52 @@ class ImageDownloader(object):
         return
     ### Main methods
     def DownloadFromListOfTwitterURLs(self, twitter_URL_list):
-        for twitter_URL in twitter_URL_list:
-            print("Saving images from: " + twitter_URL)
-            self.DownloadFromTwitterURL(twitter_URL)
+        redis = Redis()
+        current_job = get_current_job(connection=redis)
+        if current_job is None:
+            print("@@@ Issue getting current job @@@")
+            return "No result"
+        else:
+            current_job.meta['process'] = "Download images"
+            current_job.save_meta()
 
-        #time_start = time.time()
-        #time_end = time.time()
-        #print("Wrote " + str(total_number_of_images) + " images to disk.")
-        #print("Process took " + str(time_end - time_start) + " seconds.")
-        return
-    def DownloadFromTwitterURL(self, twitter_URL):
+            n_downloaded_image_total = 0
+            n_twitter_link = len(twitter_URL_list)
+            i_twitter_link = 0
+            for twitter_URL in twitter_URL_list:
+                print("Saving images from: " + twitter_URL)
+
+                progress = "Downloaded {0} images from {1}/{2} URLs ({3}%)".format(
+                    n_downloaded_image_total,
+                    i_twitter_link,
+                    n_twitter_link,
+                    int(i_twitter_link/n_twitter_link*100),
+                )
+                print(progress)
+                current_job.meta['progress'] = progress
+                current_job.save_meta()
+                
+                n_downloaded_image_total += self._DownloadFromTwitterURL(twitter_URL)
+                i_twitter_link += 1
+
+            result = "Downloaded {0} images from {1} URLs".format(
+                n_downloaded_image_total,
+                n_twitter_link,
+            )
+            return result
+    def _DownloadFromTwitterURL(self, twitter_URL):
         twitter_URL = self._ProcessTwitterURL(twitter_URL)
-
         meta_tag_list, code = self._GetMetaTagsFromURLHTML(twitter_URL)
-        
         if meta_tag_list is None:
             print("Error: no meta tags for " + twitter_URL)
             print("HTML response status code = " + str(code))
             return
-        #print(meta_tag_list)
         image_URL_list = self._GetImageURLsFromTags(meta_tag_list)
-        
         if len(image_URL_list) == 0:
             print("Tweet has no images: " + twitter_URL)
         else:
-            self._DownloadImagesFromImageURLs(image_URL_list)
-        return
+            n_downloaded_image = self._DownloadImagesFromImageURLs(image_URL_list)
+        return n_downloaded_image
     ### Helper methods
     def _ProcessTwitterURL(self, twitter_URL):
         # Strip whitespace (mainly the \n newline)
@@ -83,6 +103,7 @@ class ImageDownloader(object):
                         image_URL_list.append(image_url)
         return image_URL_list
     def _DownloadImagesFromImageURLs(self, image_URL_list):
+        n_downloaded_image = 0
         for url in image_URL_list:
             # Split URL using / and get image file name
             match_list = re.split('/', url)
@@ -90,7 +111,6 @@ class ImageDownloader(object):
                 if 'jpg:large' in match:
                     # Leave ':large' out of the file name
                     file_name = match.replace("jpg:large", "jpg")
-                    #print("Downloading: " + file_name)
                     destination_file_name = os.path.join(self.download_path, file_name)
             
             # Check that image file name is not already in destination folder
@@ -102,7 +122,6 @@ class ImageDownloader(object):
                 if image_response.status_code != 200:
                     print("Error: response status code = " + str(image_response.status_code) + " for " + url)
                     break
-                #self.total_number_of_images += 1
                 #print("Downloading", destination_file_name)
 
                 # Write image data to disk
@@ -110,17 +129,5 @@ class ImageDownloader(object):
                     # Download using the set download chunk size
                     for chunk in image_response.iter_content(self.chunk_size):
                         f.write(chunk)
-        return
-
-    def tempfunc(self):
-        current_job = get_current_job(connection=Redis())
-        print("Current job is:")
-        print(current_job)
-        n = 10
-        for i in range(1, n + 1):
-            percentage = str(i/n*100) + '%'
-            print(percentage)
-            current_job.meta['progress'] = percentage
-            current_job.save_meta()
-            time.sleep(0.5)
-        return
+                n_downloaded_image += 1
+        return n_downloaded_image

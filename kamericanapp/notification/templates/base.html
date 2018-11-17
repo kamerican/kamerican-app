@@ -29,15 +29,13 @@
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-            <div class="alert alert-info" role="alert">{{ message }}</div>
+            <div class="alert alert-warning" role="alert">{{ message }}</div>
             {% endfor %}
         {% endif %}
         {% endwith %}
         
-        <div class="alert alert-info" id="job-progress-notification" role="alert" style="display: none;">
-            <span id="job-id"></span>
-        </div>
-        
+        <div class="alert alert-info" id="job-progress-notification" role="alert" style="display: none;"></div>
+        <div class="alert alert-success" id="job-finished-notification" role="alert" style="display: none;">Finished jobs:</div>
 
         {# application content needs to be provided in the app_content block #}
         {% block app_content %}{% endblock %}
@@ -48,42 +46,48 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.slim.js"></script>
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect('http://' + document.domain + ':' + location.port);
-        var job_id = document.getElementById("job-id");
         var job_progress_notification = document.getElementById("job-progress-notification");
+        var job_finished_notification = document.getElementById("job-finished-notification");
         
-        //console.log(job_progress_notification.style.display)
-        //job_id.innerHTML = job_progress_notification.style.display
 
-        
+
+        // General event receivers
         socket.on('connect', function() {
-            //socket.emit('my event', {data: 'I\'m connected!'});
             socket.send('Connected');
-            //socket.emit('start receiving notifications')
         });
         socket.on('disconnect', function() {
             socket.send('Disconnected');
         });
 
+        // Job progress receivers
         socket.on('update job progress', function(msg) {
-            console.log(msg)
             socket.send('Received running job progress');
-            job_id.innerHTML = msg.progress;
+            job_progress_notification.innerHTML = msg.data;
         });
-
-
         socket.on('show running job bar', function() {
             if (job_progress_notification.style.display == "none") {
                 socket.send('Showing running job bar');
                 job_progress_notification.style.display = 'block';
             }
-            
         });
         socket.on('hide running job bar', function() {
             if (job_progress_notification.style.display == "block") {
                 socket.send('Hiding running job bar');
                 job_progress_notification.style.display = 'none';
             }
-            
         });
+
+        // Job finished receivers
+        socket.on('update job finished', function(msg) {
+            socket.send('Received finished job');
+            job_finished_notification.innerHTML += msg.data;
+        });
+        socket.on('show finished job bar', function() {
+            if (job_finished_notification.style.display == "none") {
+                socket.send('Showing finished job bar');
+                job_finished_notification.style.display = 'block';
+            }
+        })
+
     </script>
 {% endblock %}

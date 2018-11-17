@@ -23,15 +23,12 @@ def GetJobProgress(app):
         showing_running_job_bar = False
         toggle_on_running_job_bar = False
         toggle_off_running_job_bar = False
-
-        showing_finished_job_bar = False
-
         
-
+        
         while True:
             time.sleep(2)
             running_msg = "Running jobs:"
-            finished_msg = "Finished jobs:"
+            finished_msg = ""
             running_job_id_list = running_registry.get_job_ids()
             finished_job_id_list = finished_registry.get_job_ids()
 
@@ -40,17 +37,11 @@ def GetJobProgress(app):
                 for job_id in running_job_id_list:
                     running_msg += "<br>Job ID: {}".format(job_id)
                     running_job = Job.fetch(id=job_id, connection=redis)
-                    #print(job)
-                    #print("meta: ", job.meta)
-
-                    # @@@ add a process/function name
-
-
+                    if 'process' in running_job.meta:
+                        running_msg += "<UL><LI>Process: {}".format(running_job.meta['process'])
                     if 'progress' in running_job.meta:
-                        #print(job.meta['progress'])
-                        running_msg += ", Progress: {}".format(running_job.meta['progress'])
-                socketio.emit('update job progress', {'progress': running_msg})
-                
+                        running_msg += "<LI>Progress: {}</UL>".format(running_job.meta['progress'])
+                socketio.emit('update job progress', {'data': running_msg})
                 toggle_on_running_job_bar = True
             else:
                 toggle_off_running_job_bar = True
@@ -58,13 +49,19 @@ def GetJobProgress(app):
             if finished_job_id_list:
                 # Display finished job notification and save to db
                 for job_id in finished_job_id_list:
-                    running_msg += "<br>Job ID: {}".format(job_id)
+                    finished_msg += "<br>Job ID: {}".format(job_id)
                     finished_job = Job.fetch(job_id, connection=redis)
+                    if 'process' in finished_job.meta:
+                        finished_msg += "<UL><LI>Process: {}".format(finished_job.meta['process'])
                     rq_job = RQJob()
                     rq_job.save_job(finished_job)
                     finished_registry.remove(finished_job)
+                    finished_msg += "<LI>Result: {}".format(rq_job.get_result())
+                    finished_msg += "<LI>Time elapsed: {} seconds</UL>".format(rq_job.get_elapsed_time())
+                socketio.emit('update job finished', {'data': finished_msg})
+                socketio.emit('show finished job bar')
 
-
+            
 
             if showing_running_job_bar and toggle_off_running_job_bar:
                 toggle_off_running_job_bar = False
