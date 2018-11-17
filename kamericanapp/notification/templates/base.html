@@ -1,0 +1,93 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    kamerican
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('dashboard.route_index') }}">kamerican</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('imagedownloader.route_imagedownloader') }}">{{ 'Twitter Image Downloader' }}</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- Add links on the right side of the navbar here -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        
+        <!-- Flashed messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        
+        <div class="alert alert-info" id="job-progress-notification" role="alert" style="display: none;"></div>
+        <div class="alert alert-success" id="job-finished-notification" role="alert" style="display: none;">Finished jobs:</div>
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.slim.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var job_progress_notification = document.getElementById("job-progress-notification");
+        var job_finished_notification = document.getElementById("job-finished-notification");
+        
+
+
+        // General event receivers
+        socket.on('connect', function() {
+            socket.send('Connected');
+        });
+        socket.on('disconnect', function() {
+            socket.send('Disconnected');
+        });
+
+        // Job progress receivers
+        socket.on('update job progress', function(msg) {
+            socket.send('Received running job progress');
+            job_progress_notification.innerHTML = msg.data;
+        });
+        socket.on('show running job bar', function() {
+            if (job_progress_notification.style.display == "none") {
+                socket.send('Showing running job bar');
+                job_progress_notification.style.display = 'block';
+            }
+        });
+        socket.on('hide running job bar', function() {
+            if (job_progress_notification.style.display == "block") {
+                socket.send('Hiding running job bar');
+                job_progress_notification.style.display = 'none';
+            }
+        });
+
+        // Job finished receivers
+        socket.on('update job finished', function(msg) {
+            socket.send('Received finished job');
+            job_finished_notification.innerHTML += msg.data;
+        });
+        socket.on('show finished job bar', function() {
+            if (job_finished_notification.style.display == "none") {
+                socket.send('Showing finished job bar');
+                job_finished_notification.style.display = 'block';
+            }
+        })
+
+    </script>
+{% endblock %}

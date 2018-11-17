@@ -1,16 +1,13 @@
-from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
-from kamericanapp import db
-from kamericanapp.database.models import Users
-from kamericanapp.dashboard import bp
+from flask import render_template, flash, redirect, url_for
+from kamericanapp.dashboard import bp_dashboard
 
+@bp_dashboard.route('/')
+def route_root():
+    flash('Redirected to index!')
+    return redirect(url_for('dashboard.route_index'))
 
-@bp.route('/')
-def root():
-    return redirect(url_for('dashboard.index'))
-
-@bp.route('/index', methods=['GET', 'POST'])
-def index():
+@bp_dashboard.route('/index', methods=['GET', 'POST'])
+def route_index():
     return render_template('index.html')
 
 
