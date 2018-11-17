@@ -8,11 +8,11 @@
     <nav class="navbar navbar-default">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">kamerican</a>
+                <a class="navbar-brand" href="{{ url_for('dashboard.route_index') }}">kamerican</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('imagedownloader.imagedownloader') }}">{{ 'Twitter Image Downloader' }}</a></li>
+                    <li><a href="{{ url_for('imagedownloader.route_imagedownloader') }}">{{ 'Twitter Image Downloader' }}</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <!-- Add links on the right side of the navbar here -->
@@ -57,11 +57,11 @@
         
         socket.on('connect', function() {
             //socket.emit('my event', {data: 'I\'m connected!'});
-            socket.send('Websocket connected');
+            socket.send('Connected');
             //socket.emit('start receiving notifications')
         });
         socket.on('disconnect', function() {
-            console.log("Disconnected")
+            socket.send('Disconnected');
         });
 
         socket.on('update job progress', function(msg) {

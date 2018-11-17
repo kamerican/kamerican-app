@@ -1,14 +1,6 @@
 from kamericanapp import db
 from datetime import datetime
 
-from rq import Queue, get_current_job
-from redis import Redis
-from rq.job import Job
-from rq.registry import StartedJobRegistry, FinishedJobRegistry
-
-
-
-
 class RQJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     job_id = db.Column(db.String(36))
@@ -19,20 +11,31 @@ class RQJob(db.Model):
 
     def __repr__(self):
         return '<RQJob id: {}>'.format(self.job_id)
-    def set_status(self, job_status):
-        self.status = job_status
-    def set_enqueue_time(self, rq_time):
-        self.enqueued_at = rq_time
-    def set_start_time(self, rq_time):
-        self.started_at = rq_time
-    def set_end_time(self, rq_time):
-        self.ended_at = rq_time
+    
+    def save_job(self, job):
+        self.job_id = job.id
+        self.status = job.status
+        self.enqueued_at = job.enqueued_at
+        self.started_at = job.started_at
+        self.ended_at = job.ended_at
+        self.result = job.result
+        db.session.add(self)
+        db.session.commit()
+    def get_id(self):
+        return self.job_id
+    def get_status(self):
+        return self.status
     def get_enqueue_time(self):
         return self.enqueued_at
     def get_start_time(self):
         return self.started_at
     def get_end_time(self):
         return self.ended_at
+    def get_result(self):
+        if self.result is None:
+            return "Job has no result"
+        else:
+            return self.result
 
 
 # UNUSED TABLE

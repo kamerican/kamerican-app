@@ -5,8 +5,6 @@ import re
 import os
 import time
 
-from kamericanapp import db
-from kamericanapp.database.models import RQJob
 from redis import Redis
 from rq import get_current_job
 
@@ -115,7 +113,6 @@ class ImageDownloader(object):
         return
 
     def tempfunc(self):
-        #job = RQJob()
         current_job = get_current_job(connection=Redis())
         print("Current job is:")
         print(current_job)
@@ -125,5 +122,5 @@ class ImageDownloader(object):
             print(percentage)
             current_job.meta['progress'] = percentage
             current_job.save_meta()
-            time.sleep(3)
+            time.sleep(0.5)
         return
