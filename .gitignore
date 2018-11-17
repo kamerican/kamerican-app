@@ -1,3 +1,6 @@
+# ignore databases
+*.db
+
 # ignore compiled python files
 *.pyc
 
