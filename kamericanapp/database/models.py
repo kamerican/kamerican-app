@@ -1,6 +1,37 @@
 from kamericanapp import db
 from datetime import datetime
 
+
+class Person(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    faces = db.relationship('Face', back_populates='person') # this is a query of all faces with this person id, not a field
+
+    def __repr__(self):
+        return '<Person: {0}>'.format(self.name)
+
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filepath = db.Column(db.String)
+    faces = db.relationship('Face', back_populates='image') # this is a query of all faces with this image id, not a field
+
+    def __repr__(self):
+        return '<Image: {0}>'.format(self.filepath)
+
+class Face(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    embedding = db.Column(db.PickleType)
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id')) # this is what Person.faces is querying for
+    person =  db.relationship('Person', back_populates='faces')
+    image_id = db.Column(db.Integer, db.ForeignKey('image.id')) # this is what Image.faces is querying for
+    image = db.relationship('Image', back_populates='faces')
+    
+    
+    def __repr__(self):
+        return '<Face: {0}>'.format(self.person)
+
+
+
 class RQJob(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     job_id = db.Column(db.String(36))
