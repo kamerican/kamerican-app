@@ -1,5 +1,5 @@
 from kamericanapp import create_app, db, socketio
-from kamericanapp.database.models import RQJob, Person, Image, Face
+from kamericanapp.database.models import RQJob, Person, Image, Face, Identity
 
 app = create_app()
 #app.app_context().push()
@@ -24,5 +24,6 @@ def make_shell_context():
         'Person': Person,
         'Image': Image,
         'Face': Face,
+        'Identity': Identity,
         'remove_jobs': remove_jobs,
     }

@@ -1,14 +1,37 @@
 from kamericanapp import db
 from datetime import datetime
+import enum
 
+class Identity(enum.Enum):
+    # WJSN
+    WJSN_SEOLA = enum.auto()
+    WJSN_XUANYI = enum.auto()
+    WJSN_BONA = enum.auto()
+    WJSN_EXY = enum.auto()
+    WJSN_SOOBIN = enum.auto()
+    WJSN_LUDA = enum.auto()
+    WJSN_DAWON = enum.auto()
+    WJSN_EUNSEO = enum.auto()
+    WJSN_CHENGXIAO = enum.auto()
+    WJSN_MEIQI = enum.auto()
+    WJSN_YEOREUM = enum.auto()
+    WJSN_DAYOUNG = enum.auto()
+    WJSN_YEONJUNG = enum.auto()
+    # Fromis
+    FROMIS_SAEROM = enum.auto()
+
+    def describe(self):
+        return "Name: {0}, Value: {1}".format(self.name, self.value)
 
 class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    identity = db.Column(db.Enum(Identity))
     name = db.Column(db.String)
     faces = db.relationship('Face', back_populates='person') # this is a query of all faces with this person id, not a field
+    
 
     def __repr__(self):
-        return '<Person: {0}>'.format(self.name)
+        return '<Person: {0}>'.format(self.identity)
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,7 +48,7 @@ class Face(db.Model):
     person =  db.relationship('Person', back_populates='faces')
     image_id = db.Column(db.Integer, db.ForeignKey('image.id')) # this is what Image.faces is querying for
     image = db.relationship('Image', back_populates='faces')
-    
+    # add training/predicted stuff here
     
     def __repr__(self):
         return '<Face: {0}>'.format(self.person)
