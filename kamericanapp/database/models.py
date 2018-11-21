@@ -21,7 +21,7 @@ class Identity(enum.Enum):
     FROMIS_SAEROM = enum.auto()
 
     def describe(self):
-        return "Name: {0}, Value: {1}".format(self.name, self.value)
+        return "name={0}, value={1}".format(self.name, self.value)
 
 class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,7 +31,7 @@ class Person(db.Model):
     
 
     def __repr__(self):
-        return '<Person: {0}>'.format(self.identity)
+        return '<Person: {0}>'.format(self.identity.describe())
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
