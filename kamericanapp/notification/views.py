@@ -14,6 +14,7 @@ from rq.registry import StartedJobRegistry, FinishedJobRegistry
 notification_thread = Thread()
 
 def GetJobProgress(app):
+    """Infinite thread that sends job updates to client."""
     with app.app_context():
         redis = Redis()
         queue = Queue(connection=redis)
@@ -78,15 +79,18 @@ def GetJobProgress(app):
     return
 @socketio.on('message')
 def receive_message(message):
+    """Function called when client sends a string message."""
     print("---------Client:", message)
 
 @socketio.on('json')
 def handle_json(json):
+    """Function called when client sends a json message."""
     print("---------Client:", json)
 
 
 @socketio.on('connect')
 def connect_response():
+    """Function called when client connects to the websocket."""
     print('---------Server: Client connected')
 
     # Start background thread for job updates only once
@@ -106,6 +110,7 @@ def connect_response():
 
 @socketio.on('disconnect')
 def disconnect_response():
+    """Function called when client disconnects to the websocket."""
     print('---------Server: Client disconnected')
 
 

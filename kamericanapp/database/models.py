@@ -2,6 +2,7 @@ from kamericanapp import db
 from datetime import datetime
 
 class Group(db.Model):
+    """Database table of groups"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     # One group to many identities
@@ -11,6 +12,7 @@ class Group(db.Model):
         return '<Group: {0}>'.format(self.name)
 
 class Identity(db.Model):
+    """Database table of identities"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     # One identity to many faces
@@ -22,10 +24,11 @@ class Identity(db.Model):
     def __repr__(self):
         return '<Name: {0} ({1})>'.format(
             self.name,
-            self.group,
+            self.group.name,
         )
 
 class Image(db.Model):
+    """Database table of images"""
     id = db.Column(db.Integer, primary_key=True)
     filepath_original = db.Column(db.String)
     filepath_resize = db.Column(db.String)
@@ -37,6 +40,7 @@ class Image(db.Model):
         return '<Image: {0}>'.format(self.filename)
 
 class Face(db.Model):
+    """Database table of faces"""
     id = db.Column(db.Integer, primary_key=True)
     embedding = db.Column(db.PickleType)
     filepath = db.Column(db.String)
@@ -54,6 +58,7 @@ class Face(db.Model):
 
 
 class RQJob(db.Model):
+    """Database table of redis queue worker jobs"""
     id = db.Column(db.Integer, primary_key=True)
     job_id = db.Column(db.String(36))
     process = db.Column(db.String(72))
@@ -64,9 +69,10 @@ class RQJob(db.Model):
     result =  db.Column(db.String(128))
 
     def __repr__(self):
-        return '<ID: {0}, Process: {1}>'.format(self.job_id, self.process)
+        return '<Job ID: {0}, Process: {1}>'.format(self.job_id, self.process)
 
     def save_job(self, job):
+        """Save job details to the RQJob db table""" 
         self.job_id = job.id
         self.status = job.status
         self.enqueued_at = job.enqueued_at
@@ -81,22 +87,30 @@ class RQJob(db.Model):
         db.session.add(self)
         db.session.commit()
     def get_id(self):
+        """Return job ID"""
         return self.job_id
     def get_process(self):
+        """Return job process"""
         return self.process
     def get_status(self):
+        """Return job status"""
         return self.status
     def get_enqueue_time(self):
+        """Return job queue time"""
         return self.enqueued_at
     def get_start_time(self):
+        """Return job start time"""
         return self.started_at
     def get_end_time(self):
+        """Return job completion time"""
         return self.ended_at
     def get_result(self):
+        """Return job result"""
         if self.result is None:
             return "Job has no result"
         else:
             return self.result
     def get_elapsed_time(self):
+        """Return job run time"""
         time_delta = self.ended_at - self.started_at
         return time_delta.seconds

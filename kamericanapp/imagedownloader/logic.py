@@ -9,6 +9,7 @@ from redis import Redis
 from rq import get_current_job
 
 class ImageDownloader(object):
+    """Class handling downloading images from URLs."""
     def __init__(self, chunk_size=1024):
         working_directory = os.getcwd()
         #print(working_directory)
@@ -20,8 +21,8 @@ class ImageDownloader(object):
         self.chunk_size = chunk_size
         self.html_session = HTMLSession()
         return
-    ### Main methods
-    def DownloadFromListOfTwitterURLs(self, twitter_URL_list):
+    def download_from_list_of_twitter_urls(self, twitter_URL_list):
+        """Async method downloading images from twitter URLs."""
         redis = Redis()
         current_job = get_current_job(connection=redis)
         if current_job is None:
@@ -47,7 +48,7 @@ class ImageDownloader(object):
                 current_job.meta['progress'] = progress
                 current_job.save_meta()
                 
-                n_downloaded_image_total += self._DownloadFromTwitterURL(twitter_URL)
+                n_downloaded_image_total += self._download_from_twitter_url(twitter_URL)
                 i_twitter_link += 1
 
             result = "Downloaded {0} images from {1} URLs".format(
@@ -55,28 +56,29 @@ class ImageDownloader(object):
                 n_twitter_link,
             )
             return result
-    def _DownloadFromTwitterURL(self, twitter_URL):
-        twitter_URL = self._ProcessTwitterURL(twitter_URL)
-        meta_tag_list, code = self._GetMetaTagsFromURLHTML(twitter_URL)
+    def _download_from_twitter_url(self, twitter_URL):
+        """Private main method.""" 
+        twitter_URL = self._process_twitter_url(twitter_URL)
+        meta_tag_list, code = self._get_meta_tags_from_url_html(twitter_URL)
         if meta_tag_list is None:
             print("Error: no meta tags for " + twitter_URL)
             print("HTML response status code = " + str(code))
             return
-        image_URL_list = self._GetImageURLsFromTags(meta_tag_list)
+        image_URL_list = self._get_image_urls_from_tags(meta_tag_list)
         if len(image_URL_list) == 0:
             print("Tweet has no images: " + twitter_URL)
         else:
-            n_downloaded_image = self._DownloadImagesFromImageURLs(image_URL_list)
+            n_downloaded_image = self._download_images_from_image_urls(image_URL_list)
         return n_downloaded_image
-    ### Helper methods
-    def _ProcessTwitterURL(self, twitter_URL):
+    def _process_twitter_url(self, twitter_URL):
+        """Method preprocessing the URL string."""
         # Strip whitespace (mainly the \n newline)
         twitter_URL = twitter_URL.rstrip()
         # Transform mobile version of links
         twitter_URL = twitter_URL.replace("mobile.", "")
         return twitter_URL
-    def _GetMetaTagsFromURLHTML(self, twitter_URL):
-        # Get reponse from URL - using requests which is broken because javascript
+    def _get_meta_tags_from_url_html(self, twitter_URL):
+        """Method getting reponse from URL - using requests which is broken because javascript."""
         #response = requests.get(twitter_URL)
 
         # Get reponse from URL - using html-requests
@@ -90,7 +92,8 @@ class ImageDownloader(object):
         ### CHANGE TO RETURN HTML SOUP AND RESPONSE ONLY, CAN GET THE TAGS IN ANOTHER METHOD
         meta_tag_list = html_soup.find_all('meta')
         return meta_tag_list, response.status_code
-    def _GetImageURLsFromTags(self, meta_tag_list):
+    def _get_image_urls_from_tags(self, meta_tag_list):
+        """Method getting the image URL strings."""
         image_URL_list = []
         for tag in meta_tag_list:
             attribute_dict = tag.attrs
@@ -102,7 +105,8 @@ class ImageDownloader(object):
                     if 'jpg:large' in image_url:
                         image_URL_list.append(image_url)
         return image_URL_list
-    def _DownloadImagesFromImageURLs(self, image_URL_list):
+    def _download_images_from_image_urls(self, image_URL_list):
+        """Method doing the actual downloading."""
         n_downloaded_image = 0
         for url in image_URL_list:
             # Split URL using / and get image file name
