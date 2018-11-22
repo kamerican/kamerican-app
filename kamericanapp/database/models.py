@@ -1,57 +1,55 @@
 from kamericanapp import db
 from datetime import datetime
-import enum
 
-class Identity(enum.Enum):
-    # WJSN
-    WJSN_SEOLA = enum.auto()
-    WJSN_XUANYI = enum.auto()
-    WJSN_BONA = enum.auto()
-    WJSN_EXY = enum.auto()
-    WJSN_SOOBIN = enum.auto()
-    WJSN_LUDA = enum.auto()
-    WJSN_DAWON = enum.auto()
-    WJSN_EUNSEO = enum.auto()
-    WJSN_CHENGXIAO = enum.auto()
-    WJSN_MEIQI = enum.auto()
-    WJSN_YEOREUM = enum.auto()
-    WJSN_DAYOUNG = enum.auto()
-    WJSN_YEONJUNG = enum.auto()
-    # Fromis
-    FROMIS_SAEROM = enum.auto()
-
-    def describe(self):
-        return "name={0}, value={1}".format(self.name, self.value)
-
-class Person(db.Model):
+class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    identity = db.Column(db.Enum(Identity))
     name = db.Column(db.String)
-    faces = db.relationship('Face', back_populates='person') # this is a query of all faces with this person id, not a field
+    # One group to many identities
+    identities = db.relationship('Identity', back_populates='group') # this is a query of all identities, not a field
     
+    def __repr__(self):
+        return '<Group: {0}>'.format(self.name)
+
+class Identity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    # One identity to many faces
+    faces = db.relationship('Face', back_populates='identity') # this is a query of all faces with this identity id, not a field
+    # Each identity has a group
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id')) # this is what Group.identities is querying for
+    group = db.relationship('Group', back_populates='identities')
 
     def __repr__(self):
-        return '<Person: {0}>'.format(self.identity.describe())
+        return '<Name: {0} ({1})>'.format(
+            self.name,
+            self.group,
+        )
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filepath = db.Column(db.String)
+    filepath_original = db.Column(db.String)
+    filepath_resize = db.Column(db.String)
+    filename = db.Column(db.String)
+    # One image to many faces
     faces = db.relationship('Face', back_populates='image') # this is a query of all faces with this image id, not a field
 
     def __repr__(self):
-        return '<Image: {0}>'.format(self.filepath)
+        return '<Image: {0}>'.format(self.filename)
 
 class Face(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     embedding = db.Column(db.PickleType)
-    person_id = db.Column(db.Integer, db.ForeignKey('person.id')) # this is what Person.faces is querying for
-    person =  db.relationship('Person', back_populates='faces')
+    filepath = db.Column(db.String)
+    # Each face has an identity
+    identity_id = db.Column(db.Integer, db.ForeignKey('identity.id')) # this is what identity.faces is querying for
+    identity =  db.relationship('Identity', back_populates='faces')
+    # Each face has an image
     image_id = db.Column(db.Integer, db.ForeignKey('image.id')) # this is what Image.faces is querying for
     image = db.relationship('Image', back_populates='faces')
     # add training/predicted stuff here
     
     def __repr__(self):
-        return '<Face: {0}>'.format(self.person)
+        return '<Face: {0}>'.format(self.identity)
 
 
 
