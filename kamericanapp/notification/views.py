@@ -96,7 +96,8 @@ def connect_response():
     # Start background thread for job updates only once
     global notification_thread
     if notification_thread.is_alive():
-        print('---------Server: Notification thread already running')
+        pass
+        #print('---------Server: Notification thread already running')
     else:
         print('---------Server: Starting notification thread')
         notification_thread = socketio.start_background_task(GetJobProgress, current_app._get_current_object())

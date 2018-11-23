@@ -11,16 +11,20 @@ from rq import get_current_job
 class ImageDownloader(object):
     """Class handling downloading images from URLs."""
     def __init__(self, chunk_size=1024):
-        working_directory = os.getcwd()
+        #working_directory = os.getcwd()
         #print(working_directory)
         #dirname = os.path.dirname(__file__)
-
-        self.download_path = os.path.join(working_directory, 'kamericanapp', 'database', 'images', 'download')
-        #print(self.download_path)
-
+        #print(dirname, __file__)
+        #self.download_path = os.path.join(working_directory, 'kamericanapp', 'database', 'images', 'download')
+        
+        current_directory = os.path.abspath(os.path.dirname(__file__))
+        self.download_path = os.path.join(current_directory, '..', 'database', 'images', 'download')
+        #print(os.listdir(self.download_path))
+        
         self.chunk_size = chunk_size
         self.html_session = HTMLSession()
         return
+    ### Public methods
     def download_from_list_of_twitter_urls(self, twitter_URL_list):
         """Async method downloading images from twitter URLs."""
         redis = Redis()
@@ -56,6 +60,7 @@ class ImageDownloader(object):
                 n_twitter_link,
             )
             return result
+    ### Private methods
     def _download_from_twitter_url(self, twitter_URL):
         """Private main method.""" 
         twitter_URL = self._process_twitter_url(twitter_URL)
