@@ -16,12 +16,13 @@ def route_database():
     
     # Load new images into db 
     if load_images_form.validate_on_submit():
+        has_new_images = False
         for original_image_path in original_image_path_list:
-            print("Processing:", original_image_path.name)
+            #print("Processing:", original_image_path.name)
             try:
                 # Check if there are duplicate filenames already in db
                 image_filename_query_match = Image.query.filter_by(filename=original_image_path.name).one_or_none()
-                print("Query:", image_filename_query_match)
+                #print("Query:", image_filename_query_match)
             except MultipleResultsFound as error:
                 # There's an image with the same filename in db
                 # @@@@@ add stuff here to fix the duplication @@@@@@@@@@@@@
@@ -34,10 +35,15 @@ def route_database():
                     print("Already in database:", original_image_path.name)
                 else:
                     # Add image to db
+                    has_new_images = True
                     print("Adding to database:", original_image_path.name)
-                    #image = Image()
-                    #image.filename = original_image_path.name
-                    #image.filepath_original = original_image_path
+                    image = Image()
+                    image.filename = original_image_path.name
+                    image.filepath_original = original_image_path
+                    db.session.add(image)
+        if has_new_images:
+            print("Committing database additions")
+            db.session.commit()
         
         return redirect(url_for('database.route_database'))
     else:
