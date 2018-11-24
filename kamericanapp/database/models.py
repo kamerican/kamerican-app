@@ -70,29 +70,13 @@ class Face(db.Model):
     """Database table of faces"""
     id = db.Column(db.Integer, primary_key=True)
     embedding = db.Column(db.PickleType)
-    filepath = db.Column(db.String)
+    _filepath = db.Column(db.String)
     # Each face has an identity
     identity_id = db.Column(db.Integer, db.ForeignKey('identity.id')) # this is what identity.faces is querying for
     identity =  db.relationship('Identity', back_populates='faces')
     # Each face has an image
     image_id = db.Column(db.Integer, db.ForeignKey('image.id')) # this is what Image.faces is querying for
     image = db.relationship('Image', back_populates='faces')
-    # add training/predicted stuff here
-    
-    def __repr__(self):
-        return '<Face: {0}>'.format(self.identity)
-
-class Facee(db.Model):
-    """Database table of faces"""
-    id = db.Column(db.Integer, primary_key=True)
-    embedding = db.Column(db.PickleType)
-    _filepath = db.Column(db.String)
-    # Each face has an identity
-    #identity_id = db.Column(db.Integer, db.ForeignKey('identity.id')) # this is what identity.faces is querying for
-    #identity =  db.relationship('Identity', back_populates='faces')
-    # Each face has an image
-    #image_id = db.Column(db.Integer, db.ForeignKey('image.id')) # this is what Image.faces is querying for
-    #image = db.relationship('Image', back_populates='faces')
     # add training/predicted stuff here
     
     @hybrid_property

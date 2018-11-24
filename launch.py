@@ -85,4 +85,5 @@ def make_shell_context():
         'Face': kamericanapp.database.models.Face,
         'Identity': kamericanapp.database.models.Identity,
         'refresh_idols': refresh_idols,
+        'clear_table': clear_table,
     }
