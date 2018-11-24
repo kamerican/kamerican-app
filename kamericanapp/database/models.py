@@ -34,19 +34,6 @@ class Identity(db.Model):
 class Image(db.Model):
     """Database table of images"""
     id = db.Column(db.Integer, primary_key=True)
-    filepath_original = db.Column(db.String)
-    filepath_resize = db.Column(db.String)
-    filename = db.Column(db.String)
-    faces_extracted = db.Column(db.Boolean, default=False, server_default=expression.true(), nullable=False)
-    # One image to many faces
-    faces = db.relationship('Face', back_populates='image') # this is a query of all faces with this image id, not a field
-
-    def __repr__(self):
-        return '<Image: {0}>'.format(self.filename)
-
-class Imagee(db.Model):
-    """Database table of images"""
-    id = db.Column(db.Integer, primary_key=True)
     _filepath_original = db.Column(db.String)
     _filepath_resize = db.Column(db.String)
     filename = db.Column(db.String)
@@ -57,11 +44,24 @@ class Imagee(db.Model):
     # File paths
     @hybrid_property
     def filepath_original(self):
-        return Path(self._filepath_original)
+        if self._filepath_original is None:
+            return None
+        else:
+            return Path(self._filepath_original)
     @filepath_original.setter
     def filepath_original(self, path):
         self._filepath_original = str(path)
     
+    @hybrid_property
+    def filepath_resize(self):
+        if self._filepath_resize is None:
+            return None
+        else:
+            return Path(self._filepath_resize)
+    @filepath_resize.setter
+    def filepath_resize(self, path):
+        self._filepath_resize = str(path)
+
     # Methods
     def __repr__(self):
         return '<Image: {0}>'.format(self.filename)
@@ -82,7 +82,31 @@ class Face(db.Model):
     def __repr__(self):
         return '<Face: {0}>'.format(self.identity)
 
+class Facee(db.Model):
+    """Database table of faces"""
+    id = db.Column(db.Integer, primary_key=True)
+    embedding = db.Column(db.PickleType)
+    _filepath = db.Column(db.String)
+    # Each face has an identity
+    #identity_id = db.Column(db.Integer, db.ForeignKey('identity.id')) # this is what identity.faces is querying for
+    #identity =  db.relationship('Identity', back_populates='faces')
+    # Each face has an image
+    #image_id = db.Column(db.Integer, db.ForeignKey('image.id')) # this is what Image.faces is querying for
+    #image = db.relationship('Image', back_populates='faces')
+    # add training/predicted stuff here
+    
+    @hybrid_property
+    def filepath(self):
+        if self._filepath is None:
+            return None
+        else:
+            return Path(self._filepath)
+    @filepath.setter
+    def filepath(self, path):
+        self._filepath = str(path)
 
+    def __repr__(self):
+        return '<Face: {0}>'.format(self.identity)
 
 class RQJob(db.Model):
     """Database table of redis queue worker jobs"""
