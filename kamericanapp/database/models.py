@@ -1,5 +1,9 @@
 from kamericanapp import db
 from datetime import datetime
+from sqlalchemy.sql import expression
+from sqlalchemy.ext.hybrid import hybrid_property
+from pathlib import Path
+
 
 class Group(db.Model):
     """Database table of groups"""
@@ -33,10 +37,32 @@ class Image(db.Model):
     filepath_original = db.Column(db.String)
     filepath_resize = db.Column(db.String)
     filename = db.Column(db.String)
-    
+    faces_extracted = db.Column(db.Boolean, default=False, server_default=expression.true(), nullable=False)
     # One image to many faces
     faces = db.relationship('Face', back_populates='image') # this is a query of all faces with this image id, not a field
 
+    def __repr__(self):
+        return '<Image: {0}>'.format(self.filename)
+
+class Imagee(db.Model):
+    """Database table of images"""
+    id = db.Column(db.Integer, primary_key=True)
+    _filepath_original = db.Column(db.String)
+    _filepath_resize = db.Column(db.String)
+    filename = db.Column(db.String)
+    faces_extracted = db.Column(db.Boolean, default=False, server_default=expression.false(), nullable=False)
+    # One image to many faces
+    faces = db.relationship('Face', back_populates='image') # this is a query of all faces with this image id, not a field
+    
+    # File paths
+    @hybrid_property
+    def filepath_original(self):
+        return Path(self._filepath_original)
+    @filepath_original.setter
+    def filepath_original(self, path):
+        self._filepath_original = str(path)
+    
+    # Methods
     def __repr__(self):
         return '<Image: {0}>'.format(self.filename)
 

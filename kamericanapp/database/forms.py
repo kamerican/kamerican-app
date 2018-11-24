@@ -4,5 +4,5 @@ from flask_wtf import FlaskForm
 
 
 class LoadImagesForm(FlaskForm):
-    """Submit button for loading images in load directory into database."""
-    submit = SubmitField(label="Load into database")
+    """Submit button for loading images in original directory into database."""
+    submit = SubmitField(label="Load new original images into the database")

@@ -1,6 +1,5 @@
 from kamericanapp import create_app, db, socketio
-#from kamericanapp.database.models import RQJob
-from kamericanapp.database.models import RQJob, Group, Image, Face, Identity
+import kamericanapp.database.models
 
 app = create_app()
 print("Launching server on host url: http://127.0.0.1:5000/")
@@ -10,10 +9,10 @@ print("Launching server on host url: http://127.0.0.1:5000/")
 def refresh_idols():
     """Clears tables and adds idols."""
     # Clear tables
-    clear_table(Face)
-    clear_table(Image)
-    clear_table(Identity)
-    clear_table(Group)
+    clear_table(kamericanapp.database.models.Face)
+    clear_table(kamericanapp.database.models.Image)
+    clear_table(kamericanapp.database.models.Identity)
+    clear_table(kamericanapp.database.models.Group)
     # Add idols
     idol_dict = {
         'WJSN': [
@@ -80,10 +79,10 @@ def make_shell_context():
     """Adds objects into python shell context."""
     return {
         'db': db,
-        'RQJob': RQJob,
-        'Group': Group,
-        'Image': Image,
-        'Face': Face,
-        'Identity': Identity,
+        'RQJob': kamericanapp.database.models.RQJob,
+        'Group': kamericanapp.database.models.Group,
+        'Image': kamericanapp.database.models.Image,
+        'Face': kamericanapp.database.models.Face,
+        'Identity': kamericanapp.database.models.Identity,
         'refresh_idols': refresh_idols,
     }

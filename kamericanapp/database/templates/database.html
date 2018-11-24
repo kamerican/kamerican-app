@@ -4,8 +4,9 @@
 
 {% block app_content %}
     <h1>Database Management</h1>
-    <div>Number of images in load directory: {{ n_load_images }}</div>
-    {{ wtf.quick_form(form) }}
+    <div>Number of images in original directory: {{ n_original_images }}</div>
+    <div>Number of images in database: {{ n_database_images }}</div>
+    {{ wtf.quick_form(load_images_form) }}
 {% endblock %}
 
     

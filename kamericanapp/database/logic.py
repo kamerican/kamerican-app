@@ -2,14 +2,16 @@ import glob
 import os
 from pathlib import Path
 
+
+
 class DatabaseManager(object):
     """Class controlling images in linked to the database."""
     def __init__(self, image_extension_list=['jpg', 'png']):
         self.image_extension_list = image_extension_list
         base_dir_path = Path(__file__)
         image_dir_path = base_dir_path.joinpath('..', 'images').resolve(strict=True)
-        self.download_dir_path = image_dir_path / 'download'
-        self.load_dir_path = image_dir_path / 'load'
+        #self.download_dir_path = image_dir_path / 'download'
+        #self.load_dir_path = image_dir_path / 'load'
         self.original_dir_path = image_dir_path / 'original'
         self.duplicate_dir_path = image_dir_path / 'duplicate'
         self.resize_dir_path = image_dir_path / 'resize'
