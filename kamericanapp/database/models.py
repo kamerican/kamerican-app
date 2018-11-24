@@ -33,6 +33,7 @@ class Image(db.Model):
     filepath_original = db.Column(db.String)
     filepath_resize = db.Column(db.String)
     filename = db.Column(db.String)
+    
     # One image to many faces
     faces = db.relationship('Face', back_populates='image') # this is a query of all faces with this image id, not a field
 
@@ -86,24 +87,6 @@ class RQJob(db.Model):
             self.process = "No process saved"
         db.session.add(self)
         db.session.commit()
-    def get_id(self):
-        """Return job ID"""
-        return self.job_id
-    def get_process(self):
-        """Return job process"""
-        return self.process
-    def get_status(self):
-        """Return job status"""
-        return self.status
-    def get_enqueue_time(self):
-        """Return job queue time"""
-        return self.enqueued_at
-    def get_start_time(self):
-        """Return job start time"""
-        return self.started_at
-    def get_end_time(self):
-        """Return job completion time"""
-        return self.ended_at
     def get_result(self):
         """Return job result"""
         if self.result is None:

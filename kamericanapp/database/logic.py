@@ -1,33 +1,30 @@
 import glob
 import os
-
+from pathlib import Path
 
 class DatabaseManager(object):
     """Class controlling images in linked to the database."""
-    def __init__(self):
-        current_directory = os.path.abspath(os.path.dirname(__file__))
-        images_directory = os.path.join(current_directory, 'images')
-        self.download_directory = os.path.join(images_directory, 'download')
-        self.load_directory = os.path.join(images_directory, 'load')
-        self.original_directory = os.path.join(images_directory, 'original')
-        self.resize_directory = os.path.join(images_directory, 'resize')
-        self.face_directory = os.path.join(images_directory, 'face')
+    def __init__(self, image_extension_list=['jpg', 'png']):
+        self.image_extension_list = image_extension_list
+        base_dir_path = Path(__file__)
+        image_dir_path = base_dir_path.joinpath('..', 'images').resolve(strict=True)
+        self.download_dir_path = image_dir_path / 'download'
+        self.load_dir_path = image_dir_path / 'load'
+        self.original_dir_path = image_dir_path / 'original'
+        self.duplicate_dir_path = image_dir_path / 'duplicate'
+        self.resize_dir_path = image_dir_path / 'resize'
+        self.face_dir_path = image_dir_path / 'face'
         return
     ### Public methods
-    def get_n_load_images(self):
-        """Return number of images in the load directory."""
-        load_image_list = self._get_image_glob_list(self.load_directory)
-        return len(load_image_list)
+    def get_image_glob_list(self, dir_path):
+        """Returns a list of images in a given image directory"""
+        image_path_list = []
+        for image_extension in self.image_extension_list:
+            pattern = '*.' + image_extension
+            image_path_list.extend(dir_path.glob(pattern))
+        return image_path_list
     ### Private methods
-    def _get_image_glob_list(self, directory):
-        jpg_pattern = os.path.join(directory, '*.jpg')
-        jpg_list = glob.glob(pathname=jpg_pattern)
-        png_pattern = os.path.join(directory, '*.png')
-        png_list = glob.glob(pathname=png_pattern)
-        #print("jpg:", len(jpg_list))
-        #print("png:", len(png_list))
-
-        return [*jpg_list, *png_list]
-        
+    def _asdf(self):
+        return
 
 
