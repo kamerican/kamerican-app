@@ -2,25 +2,16 @@ import bs4
 import requests
 from requests_html import HTMLSession
 import re
-import os
 import time
-
+from pathlib import Path
 from redis import Redis
 from rq import get_current_job
 
 class ImageDownloader(object):
     """Class handling downloading images from URLs."""
     def __init__(self, chunk_size=1024):
-        #working_directory = os.getcwd()
-        #print(working_directory)
-        #dirname = os.path.dirname(__file__)
-        #print(dirname, __file__)
-        #self.download_path = os.path.join(working_directory, 'kamericanapp', 'database', 'images', 'download')
-        
-        current_directory = os.path.abspath(os.path.dirname(__file__))
-        self.download_path = os.path.join(current_directory, '..', 'database', 'images', 'download')
-        #print(os.listdir(self.download_path))
-        
+        base_dir_path = Path(__file__)
+        self.download_dir_path = base_dir_path.joinpath('..', '..', 'database', 'images', 'original').resolve(strict=True)
         self.chunk_size = chunk_size
         self.html_session = HTMLSession()
         return
@@ -120,21 +111,19 @@ class ImageDownloader(object):
                 if 'jpg:large' in match:
                     # Leave ':large' out of the file name
                     file_name = match.replace("jpg:large", "jpg")
-                    destination_file_name = os.path.join(self.download_path, file_name)
+                    download_file_path = self.download_dir_path / file_name
             
             # Check that image file name is not already in destination folder
-            if os.path.isfile(destination_file_name):
-                print(file_name, "already downloaded")
+            if download_file_path.is_file():
+                print("Already downloaded:", download_file_path.name)
             else:
                 # Get image from URL
                 image_response = requests.get(url, stream=True)
                 if image_response.status_code != 200:
                     print("Error: response status code = " + str(image_response.status_code) + " for " + url)
                     break
-                #print("Downloading", destination_file_name)
-
                 # Write image data to disk
-                with open(destination_file_name, 'wb') as f:
+                with download_file_path.open(mode='wb') as f:
                     # Download using the set download chunk size
                     for chunk in image_response.iter_content(self.chunk_size):
                         f.write(chunk)
