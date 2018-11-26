@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.hybrid import hybrid_property
 from pathlib import Path
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 
 class Group(db.Model):
@@ -55,12 +56,17 @@ class Image(db.Model):
     @hybrid_property
     def filepath_resize(self):
         if self._filepath_resize is None:
+            # No resize filepath string set yet
             return None
         else:
+            # Return the path object 
             return Path(self._filepath_resize)
     @filepath_resize.setter
     def filepath_resize(self, path):
         self._filepath_resize = str(path)
+    @filepath_resize.expression
+    def filepath_resize(cls):
+        return cls._filepath_resize
 
     # Methods
     def __repr__(self):

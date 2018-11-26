@@ -18,16 +18,10 @@ def route_imagedownloader():
     form = LinksForm()
     if form.validate_on_submit():
         twitter_URL_list = form.links.data.splitlines()
-        run_local = form.run_local.data
         
         redis = Redis()
         queue = Queue(connection=redis)
-        '''
-        if run_local:
-            queue = Queue(is_async=False, connection=redis)
-        else:
-            queue = Queue(connection=redis)
-        '''
+
         queue.enqueue_call(
             func=async_download,
             args=(twitter_URL_list,),
