@@ -30,6 +30,8 @@ Mako==1.0.7
 MarkupSafe==1.0
 mccabe==0.6.1
 monotonic==1.5
+numpy==1.15.4
+opencv-python==3.4.3.18
 parse==1.9.0
 pip-autoremove==0.9.1
 pyee==5.0.0

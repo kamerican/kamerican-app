@@ -4,6 +4,6 @@ from flask_wtf import FlaskForm
 
 
 class LinksForm(FlaskForm):
+    """Form for image downloader page"""
     links = TextAreaField(label="Links to download images from:", validators=[DataRequired()])
-    run_local = BooleanField(label="Run using localhost (Note: not working, likely because of eventlet incompatibility with python 3.7)")
     submit = SubmitField(label="Submit")

@@ -43,6 +43,10 @@ def create_app(config_class=Config):
         from kamericanapp.notification import bp_notification
         app.register_blueprint(bp_notification)
 
+        from kamericanapp.database import bp_database
+        app.register_blueprint(bp_database)
+
+
 
         db.init_app(app)
         migrate.init_app(app, db)
